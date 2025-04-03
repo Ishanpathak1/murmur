@@ -51,14 +51,14 @@ export default function Inbox() {
 
         if (!reply.readAt) {
           await updateDoc(replyRef, {
-            readAt: serverTimestamp(),
+            readAt: serverTimestamp()
           });
         }
 
         messageData.push({
           message,
           replyId: message.replyId,
-          reply,
+          reply
         });
       }
 
@@ -68,6 +68,44 @@ export default function Inbox() {
 
     fetchReplies();
   }, [userId]);
+
+  const renderEmbed = (link) => {
+    if (!link) return null;
+
+    if (link.includes('youtube.com') || link.includes('youtu.be')) {
+      const videoId = link.includes('youtube.com')
+        ? new URL(link).searchParams.get('v')
+        : link.split('/').pop();
+      return (
+        <iframe
+          className="mt-3 w-full rounded"
+          height="200"
+          src={`https://www.youtube.com/embed/${videoId}`}
+          title="YouTube video"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      );
+    }
+
+    if (link.includes('spotify.com')) {
+      const parts = link.split('/');
+      const type = parts[parts.length - 2];
+      const id = parts[parts.length - 1].split('?')[0];
+      return (
+        <iframe
+          className="mt-3 w-full rounded"
+          src={`https://open.spotify.com/embed/${type}/${id}`}
+          width="100%"
+          height="80"
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"
+        />
+      );
+    }
+
+    return null;
+  };
 
   return (
     <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white p-6">
@@ -92,12 +130,16 @@ export default function Inbox() {
 
             <p className="text-sm text-gray-500 dark:text-gray-400">Their reply:</p>
             <p className="text-base">{reply.replyText}</p>
+
+            {/* Embed if link is present */}
+            {reply.songLink && renderEmbed(reply.songLink)}
           </div>
         ))}
       </div>
     </div>
   );
 }
+
 
 
 
