@@ -27,7 +27,7 @@ export default function Home() {
   const [userId, setUserId] = useState(null);
   const [hasReplies, setHasReplies] = useState(false);
 
-  // 🎨 Mood-based colors for message cards
+  // Mood colors for "Will Help" cards
   const moodColors = {
     sad: 'bg-blue-50 dark:bg-blue-900',
     angry: 'bg-red-50 dark:bg-red-900',
@@ -42,24 +42,29 @@ export default function Home() {
     setUserId(id);
   }, []);
 
-  // Check for replies in "Need Help" mode
+  // 🟢 “Need Help” → All YOUR messages
   useEffect(() => {
     if (!userId || mode !== 'need') return;
 
     const q = query(
       collection(db, 'messages'),
       where('authorId', '==', userId),
-      where('hasReply', '==', true)
+      orderBy('createdAt', 'desc')
     );
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      setHasReplies(!snapshot.empty);
+    const unsub = onSnapshot(q, (snapshot) => {
+      const myMsgs = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      setMessages(myMsgs);
+
+      // Check if any have replies
+      const hasAnyReplied = myMsgs.some((msg) => msg.hasReply);
+      setHasReplies(hasAnyReplied);
     });
 
-    return () => unsubscribe();
+    return () => unsub();
   }, [userId, mode]);
 
-  // Fetch messages for "Will Help" mode (only ones without replies)
+  // ❤️ “Will Help” → All messages that need replies
   useEffect(() => {
     if (mode !== 'help') return;
 
@@ -70,17 +75,16 @@ export default function Home() {
     );
 
     const unsub = onSnapshot(q, (snapshot) => {
-      const msgs = snapshot.docs.map((doc) => ({
+      const needReplies = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
-      setMessages(msgs);
+      setMessages(needReplies);
     });
 
     return () => unsub();
   }, [mode]);
 
-  // Submit a new message
   const submitMessage = async () => {
     if (!text.trim()) return;
     setLoading(true);
@@ -96,7 +100,7 @@ export default function Home() {
       setText('');
       alert('Your murmur has been shared 🌙');
     } catch (err) {
-      console.error('Error:', err);
+      console.error('Error adding message:', err);
       alert('Something went wrong');
     }
     setLoading(false);
@@ -107,9 +111,9 @@ export default function Home() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Murmur</h1>
         <div className="flex items-center gap-3">
-          
+         
 
-          {/* Inbox shows only if there's at least one replied message */}
+          {/* Inbox icon if any of your messages have a reply */}
           {hasReplies && (
             <Link href="/inbox" className="relative">
               <span className="text-2xl">💌</span>
@@ -119,7 +123,6 @@ export default function Home() {
             </Link>
           )}
 
-          {/* Mode Switch */}
           <button
             onClick={() => setMode('need')}
             className={`px-4 py-2 rounded-lg transition-colors ${
@@ -143,7 +146,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* If user is "Need Help" -> Show form */}
       {mode === 'need' && (
         <div>
           <textarea
@@ -153,7 +155,6 @@ export default function Home() {
             className="w-full p-3 rounded-lg bg-gray-100 dark:bg-gray-800 text-black dark:text-white mb-4"
             rows={4}
           />
-
           <select
             value={mood}
             onChange={(e) => setMood(e.target.value)}
@@ -166,9 +167,7 @@ export default function Home() {
             <option value="empty">😔 Empty</option>
             <option value="mixed">🎭 Mixed</option>
           </select>
-
           <br />
-
           <button
             onClick={submitMessage}
             disabled={loading}
@@ -177,7 +176,6 @@ export default function Home() {
             {loading ? 'Sending...' : 'Send Murmur'}
           </button>
 
-          {/* QR for cross-device sync */}
           {userId && (
             <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg mt-6 text-center text-black dark:text-white">
               <p className="mb-2 text-sm">Scan on your phone to sync:</p>
@@ -190,10 +188,24 @@ export default function Home() {
               </p>
             </div>
           )}
+
+          {/* Show your own messages (with or without replies) */}
+          <div className="grid gap-4 mt-6">
+            {messages.map((msg) => (
+              <div
+                key={msg.id}
+                className="p-4 bg-gray-100 dark:bg-gray-800 text-black dark:text-white rounded-lg transition-colors"
+              >
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                  Mood: {msg.mood} | hasReply: {msg.hasReply ? 'Yes' : 'No'}
+                </p>
+                <p className="text-lg">{msg.text}</p>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
-      {/* If user is "Will Help" -> Show messages that are not replied to */}
       {mode === 'help' && (
         <>
           <div className="flex gap-2 my-6 flex-wrap">
@@ -216,7 +228,6 @@ export default function Home() {
 
           <div className="grid gap-4">
             {messages
-              // show all if no filter, else show only if mood == selected
               .filter((msg) => !selectedMood || msg.mood === selectedMood)
               .map((msg) => {
                 const cardColor = moodColors[msg.mood] || 'bg-gray-100 dark:bg-gray-800';
@@ -251,6 +262,7 @@ export default function Home() {
     </div>
   );
 }
+
 
 
 
