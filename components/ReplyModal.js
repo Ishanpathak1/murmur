@@ -14,20 +14,32 @@ import { db } from '@/lib/firebase';
 
 export default function ReplyModal({ message, onClose }) {
   const [replyText, setReplyText] = useState('');
+  const [songLink, setSongLink] = useState('');
   const [sending, setSending] = useState(false);
 
   const authorId = typeof window !== 'undefined'
     ? localStorage.getItem('murmur_id')
     : null;
 
+  const isValidLink = (url) => {
+    return (
+      url.includes('spotify.com') ||
+      url.includes('youtube.com') ||
+      url.includes('youtu.be')
+    );
+  };
+
   const handleSubmit = async () => {
     if (!replyText.trim() || !authorId) return;
+    if (songLink && !isValidLink(songLink)) {
+      alert('Only YouTube or Spotify links are allowed.');
+      return;
+    }
+
     setSending(true);
 
     try {
-      const fiveHoursAgo = Timestamp.fromMillis(
-        Date.now() - 5 * 60 * 60 * 1000
-      );
+      const fiveHoursAgo = Timestamp.fromMillis(Date.now() - 5 * 60 * 60 * 1000);
 
       const q = query(
         collection(db, 'replies'),
@@ -46,13 +58,13 @@ export default function ReplyModal({ message, onClose }) {
       const replyRef = await addDoc(collection(db, 'replies'), {
         messageId: message.id,
         replyText,
+        songLink: songLink || null,
         authorId,
         createdAt: serverTimestamp(),
         readAt: null
       });
 
-      const msgRef = doc(db, 'messages', message.id);
-      await updateDoc(msgRef, {
+      await updateDoc(doc(db, 'messages', message.id), {
         hasReply: true,
         replyId: replyRef.id
       });
@@ -85,6 +97,14 @@ export default function ReplyModal({ message, onClose }) {
           rows={4}
         />
 
+        <input
+          type="text"
+          value={songLink}
+          onChange={(e) => setSongLink(e.target.value)}
+          placeholder="Optional song link (YouTube/Spotify only)"
+          className="w-full p-2 rounded bg-gray-100 dark:bg-gray-800 text-black dark:text-white mb-4 text-sm"
+        />
+
         <div className="flex justify-end gap-2">
           <button onClick={onClose} className="text-gray-600 dark:text-gray-300">
             Cancel
@@ -101,6 +121,7 @@ export default function ReplyModal({ message, onClose }) {
     </div>
   );
 }
+
 
 
 
