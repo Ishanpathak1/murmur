@@ -164,9 +164,9 @@ export default function Home() {
           {userId && (
             <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg mt-6 text-center text-black dark:text-white">
               <p className="mb-2 text-sm">Scan on your phone to sync:</p>
-              <QRCodeCanvas value={`https://murmur.vercel.app/?id=${userId}`} size={160} />
+              <QRCodeCanvas value={`https://murmur-eight.vercel.app/?id=${userId}`} size={160} />
               <p className="mt-2 text-xs text-gray-500 dark:text-gray-400 break-all">
-                https://murmur.vercel.app/?id={userId}
+                https://murmur-eight.vercel.app/?id={userId}
               </p>
             </div>
           )}
