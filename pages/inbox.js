@@ -111,7 +111,7 @@ export default function Inbox() {
     <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Inbox</h1>
-        <Link href="/">
+        <Link href="/murmur">
           <span className="text-blue-600 underline">&larr; Back</span>
         </Link>
       </div>
