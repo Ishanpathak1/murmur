@@ -89,6 +89,19 @@ export default function ReplyModal({ message, onClose }) {
           <button onClick={onClose} className="text-gray-600 dark:text-gray-300">
             Cancel
           </button>
+          <button
+            onClick={handleSubmit}
+            disabled={sending}
+            className="bg-blue-600 hover:bg-blue-700 dark:hover:bg-blue-500 text-white px-4 py-2 rounded-lg disabled:opacity-50 transition-colors"
+          >
+            {sending ? 'Sending...' : 'Send Kindness'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 
 
 
