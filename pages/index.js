@@ -27,11 +27,22 @@ export default function Home() {
   const [userId, setUserId] = useState(null);
   const [hasReplies, setHasReplies] = useState(false);
 
+  // 🎨 Mood-based colors for message cards
+  const moodColors = {
+    sad: 'bg-blue-50 dark:bg-blue-900',
+    angry: 'bg-red-50 dark:bg-red-900',
+    lonely: 'bg-purple-50 dark:bg-purple-900',
+    grateful: 'bg-green-50 dark:bg-green-900',
+    empty: 'bg-gray-50 dark:bg-gray-700',
+    mixed: 'bg-yellow-50 dark:bg-yellow-900',
+  };
+
   useEffect(() => {
     const id = getOrCreateUserId();
     setUserId(id);
   }, []);
 
+  // Check for replies in "Need Help" mode
   useEffect(() => {
     if (!userId || mode !== 'need') return;
 
@@ -48,6 +59,7 @@ export default function Home() {
     return () => unsubscribe();
   }, [userId, mode]);
 
+  // Fetch messages for "Will Help" mode (only ones without replies)
   useEffect(() => {
     if (mode !== 'help') return;
 
@@ -60,7 +72,7 @@ export default function Home() {
     const unsub = onSnapshot(q, (snapshot) => {
       const msgs = snapshot.docs.map((doc) => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       }));
       setMessages(msgs);
     });
@@ -68,6 +80,7 @@ export default function Home() {
     return () => unsub();
   }, [mode]);
 
+  // Submit a new message
   const submitMessage = async () => {
     if (!text.trim()) return;
     setLoading(true);
@@ -96,6 +109,7 @@ export default function Home() {
         <div className="flex items-center gap-3">
           
 
+          {/* Inbox shows only if there's at least one replied message */}
           {hasReplies && (
             <Link href="/inbox" className="relative">
               <span className="text-2xl">💌</span>
@@ -105,6 +119,7 @@ export default function Home() {
             </Link>
           )}
 
+          {/* Mode Switch */}
           <button
             onClick={() => setMode('need')}
             className={`px-4 py-2 rounded-lg transition-colors ${
@@ -128,6 +143,7 @@ export default function Home() {
         </div>
       </div>
 
+      {/* If user is "Need Help" -> Show form */}
       {mode === 'need' && (
         <div>
           <textarea
@@ -161,10 +177,14 @@ export default function Home() {
             {loading ? 'Sending...' : 'Send Murmur'}
           </button>
 
+          {/* QR for cross-device sync */}
           {userId && (
             <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg mt-6 text-center text-black dark:text-white">
               <p className="mb-2 text-sm">Scan on your phone to sync:</p>
-              <QRCodeCanvas value={`https://murmur-eight.vercel.app/?id=${userId}`} size={160} />
+              <QRCodeCanvas
+                value={`https://murmur-eight.vercel.app/?id=${userId}`}
+                size={160}
+              />
               <p className="mt-2 text-xs text-gray-500 dark:text-gray-400 break-all">
                 https://murmur-eight.vercel.app/?id={userId}
               </p>
@@ -173,10 +193,11 @@ export default function Home() {
         </div>
       )}
 
+      {/* If user is "Will Help" -> Show messages that are not replied to */}
       {mode === 'help' && (
         <>
           <div className="flex gap-2 my-6 flex-wrap">
-            {["sad", "angry", "lonely", "grateful", "empty", "mixed"].map((m) => (
+            {['sad', 'angry', 'lonely', 'grateful', 'empty', 'mixed'].map((m) => (
               <button
                 key={m}
                 onClick={() =>
@@ -184,8 +205,8 @@ export default function Home() {
                 }
                 className={`px-3 py-1 rounded-full border text-sm transition-colors ${
                   selectedMood === m
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-200 text-black dark:bg-gray-700 dark:text-white"
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-gray-200 text-black dark:bg-gray-700 dark:text-white'
                 }`}
               >
                 {m}
@@ -195,24 +216,28 @@ export default function Home() {
 
           <div className="grid gap-4">
             {messages
+              // show all if no filter, else show only if mood == selected
               .filter((msg) => !selectedMood || msg.mood === selectedMood)
-              .map((msg) => (
-                <div
-                  key={msg.id}
-                  className="p-4 bg-gray-100 dark:bg-gray-800 text-black dark:text-white rounded-lg transition-colors"
-                >
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-                    Mood: {msg.mood}
-                  </p>
-                  <p className="text-lg">{msg.text}</p>
-                  <button
-                    onClick={() => setSelectedMessage(msg)}
-                    className="mt-3 text-blue-600 underline hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+              .map((msg) => {
+                const cardColor = moodColors[msg.mood] || 'bg-gray-100 dark:bg-gray-800';
+                return (
+                  <div
+                    key={msg.id}
+                    className={`p-4 ${cardColor} text-black dark:text-white rounded-lg transition-colors`}
                   >
-                    Send Kindness
-                  </button>
-                </div>
-              ))}
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                      Mood: {msg.mood}
+                    </p>
+                    <p className="text-lg">{msg.text}</p>
+                    <button
+                      onClick={() => setSelectedMessage(msg)}
+                      className="mt-3 text-blue-600 underline hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+                    >
+                      Send Kindness
+                    </button>
+                  </div>
+                );
+              })}
           </div>
         </>
       )}
@@ -226,6 +251,7 @@ export default function Home() {
     </div>
   );
 }
+
 
 
 
