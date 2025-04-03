@@ -82,16 +82,16 @@ export default function Inbox() {
       {loading && <p>Loading replies...</p>}
 
       {!loading && messages.length === 0 && (
-        <p className="text-gray-500">No replies available at the moment.</p>
+        <p className="text-gray-500 dark:text-gray-400">No replies available at the moment.</p>
       )}
 
       <div className="grid gap-4">
         {messages.map(({ message, reply, replyId }) => (
           <div key={replyId} className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
-            <p className="text-sm text-gray-500">Your murmur:</p>
-            <p className="text-lg mb-3 italic">"{message.text}"</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Your murmur:</p>
+            <p className="text-lg mb-3 italic">&quot;{message.text}&quot;</p>
 
-            <p className="text-sm text-gray-500">Their reply:</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Their reply:</p>
             <p className="text-base">{reply.replyText}</p>
           </div>
         ))}
@@ -99,4 +99,5 @@ export default function Inbox() {
     </div>
   );
 }
+
 
