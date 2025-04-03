@@ -46,7 +46,7 @@ export default function LandingPage() {
       <div className="z-10 text-center">
         <h1 className="text-4xl md:text-6xl font-bold mb-6 drop-shadow-lg">Welcome to Murmur</h1>
         <p className="text-lg md:text-xl max-w-2xl mb-6 opacity-90">
-          A digital campfire for your thoughts. Share what's on your mind — anonymously. Someone out there might send you kindness.
+          A digital campfire for your thoughts. Share what&apos;s on your mind — anonymously. Someone out there might send you kindness.
         </p>
 
         <div className="bg-white/10 border border-white/20 px-6 py-4 rounded-lg backdrop-blur-sm mb-8">
@@ -55,13 +55,12 @@ export default function LandingPage() {
 
         <Link href="/murmur">
           <button className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-lg text-lg transition font-medium shadow-lg">
-            Start Murmuring →
+            Start Murmuring &rarr;
           </button>
         </Link>
       </div>
 
       {/* Glow effect */}
-
     </div>
   );
 }

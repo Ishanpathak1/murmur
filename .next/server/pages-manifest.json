@@ -3,6 +3,6 @@
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
   "/": "pages/index.js",
-  "/murmur": "pages/murmur.js",
-  "/inbox": "pages/inbox.js"
+  "/inbox": "pages/inbox.js",
+  "/murmur": "pages/murmur.js"
 }
