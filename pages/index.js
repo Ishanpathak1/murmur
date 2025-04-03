@@ -114,7 +114,7 @@ export default function Home() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Murmur</h1>
         <div className="flex items-center gap-3">
-          <ThemeToggle />
+          
           {hasReplies && (
             <Link href="/inbox" className="relative">
               <span className="text-2xl">💌</span>
