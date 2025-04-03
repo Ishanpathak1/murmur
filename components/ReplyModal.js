@@ -14,21 +14,27 @@ import { db } from '@/lib/firebase';
 
 export default function ReplyModal({ message, onClose }) {
   const [replyText, setReplyText] = useState('');
+  const [songUrl, setSongUrl] = useState('');
   const [sending, setSending] = useState(false);
 
   const authorId = typeof window !== 'undefined'
     ? localStorage.getItem('murmur_id')
     : null;
 
+  const isValidSongLink = (url) => {
+    return (
+      url.includes('youtube.com') ||
+      url.includes('youtu.be') ||
+      url.includes('spotify.com')
+    );
+  };
+
   const handleSubmit = async () => {
     if (!replyText.trim() || !authorId) return;
     setSending(true);
 
     try {
-      const fiveHoursAgo = Timestamp.fromMillis(
-        Date.now() - 5 * 60 * 60 * 1000
-      );
-
+      const fiveHoursAgo = Timestamp.fromMillis(Date.now() - 5 * 60 * 60 * 1000);
       const q = query(
         collection(db, 'replies'),
         where('authorId', '==', authorId),
@@ -36,25 +42,29 @@ export default function ReplyModal({ message, onClose }) {
       );
 
       const recentReplies = await getDocs(q);
-
       if (recentReplies.size >= 5) {
         alert("You’ve reached the 5 replies limit for the last 5 hours 😅");
         setSending(false);
         return;
       }
 
-      const replyRef = await addDoc(collection(db, 'replies'), {
+      const replyData = {
         messageId: message.id,
         replyText,
         authorId,
         createdAt: serverTimestamp(),
-        readAt: null
-      });
+        readAt: null,
+      };
 
-      const msgRef = doc(db, 'messages', message.id);
-      await updateDoc(msgRef, {
+      if (songUrl && isValidSongLink(songUrl)) {
+        replyData.songUrl = songUrl;
+      }
+
+      const replyRef = await addDoc(collection(db, 'replies'), replyData);
+
+      await updateDoc(doc(db, 'messages', message.id), {
         hasReply: true,
-        replyId: replyRef.id
+        replyId: replyRef.id,
       });
 
       alert('Kindness sent 💙');
@@ -70,9 +80,9 @@ export default function ReplyModal({ message, onClose }) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
       <div className="bg-white dark:bg-gray-900 rounded-lg p-6 w-full max-w-md">
-        <h2 className="text-lg font-semibold mb-3">You&apos;re sending kindness to:</h2>
+        <h2 className="text-lg font-semibold mb-3">You're sending kindness to:</h2>
         <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 italic">
-          &quot;{message.text}&quot;
+          "{message.text}"
         </p>
 
         <textarea
@@ -83,6 +93,14 @@ export default function ReplyModal({ message, onClose }) {
           placeholder="Type your reply (no copy-paste allowed)"
           className="w-full p-3 rounded bg-gray-100 dark:bg-gray-800 text-black dark:text-white mb-4"
           rows={4}
+        />
+
+        <input
+          type="url"
+          value={songUrl}
+          onChange={(e) => setSongUrl(e.target.value)}
+          placeholder="Suggest a song (YouTube or Spotify link only)"
+          className="w-full p-2 rounded bg-gray-100 dark:bg-gray-800 text-sm text-black dark:text-white mb-4"
         />
 
         <div className="flex justify-end gap-2">
@@ -101,5 +119,6 @@ export default function ReplyModal({ message, onClose }) {
     </div>
   );
 }
+
 
 

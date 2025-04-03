@@ -19,6 +19,7 @@ import ThemeToggle from '@/components/ThemeToggle';
 export default function Home() {
   const [mode, setMode] = useState('need');
   const [text, setText] = useState('');
+  const [hide, setHide] = useState(false);
   const [mood, setMood] = useState('sad');
   const [messages, setMessages] = useState([]);
   const [selectedMood, setSelectedMood] = useState(null);
@@ -38,7 +39,6 @@ export default function Home() {
 
   useEffect(() => {
     const id = getOrCreateUserId();
-    
     setUserId(id);
   }, []);
 
@@ -56,7 +56,6 @@ export default function Home() {
         id: doc.id,
         ...doc.data(),
       }));
-     
       setMessages(myMsgs);
 
       const anyReplied = myMsgs.some((msg) => msg.hasReply);
@@ -80,7 +79,6 @@ export default function Home() {
         id: doc.id,
         ...doc.data(),
       }));
-      
       setMessages(needReplies);
     });
 
@@ -98,10 +96,10 @@ export default function Home() {
         createdAt: serverTimestamp(),
         hasReply: false,
         replyId: null,
+        hidden: hide
       });
-      
       setText('');
-      
+      setHide(false);
     } catch (err) {
       console.error('[ERROR ADDING MESSAGE]', err);
       alert('Something went wrong');
@@ -129,15 +127,20 @@ export default function Home() {
       {mode === 'need' && (
         <div>
           <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="Type your thoughts..." className="w-full p-3 rounded-lg bg-gray-100 dark:bg-gray-800 mb-4" rows={4} />
-          <select value={mood} onChange={(e) => setMood(e.target.value)} className="mb-4 p-2 rounded bg-gray-200 dark:bg-gray-700">
-            <option value="sad">😢 Sad</option>
-            <option value="angry">😠 Angry</option>
-            <option value="lonely">😶 Lonely</option>
-            <option value="grateful">😇 Grateful</option>
-            <option value="empty">😔 Empty</option>
-            <option value="mixed">🎭 Mixed</option>
-          </select>
-          <br />
+          <div className="flex items-center gap-4 mb-4">
+            <select value={mood} onChange={(e) => setMood(e.target.value)} className="p-2 rounded bg-gray-200 dark:bg-gray-700">
+              <option value="sad">😢 Sad</option>
+              <option value="angry">😠 Angry</option>
+              <option value="lonely">😶 Lonely</option>
+              <option value="grateful">😇 Grateful</option>
+              <option value="empty">😔 Empty</option>
+              <option value="mixed">🎭 Mixed</option>
+            </select>
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" checked={hide} onChange={(e) => setHide(e.target.checked)} />
+              Make private
+            </label>
+          </div>
           <button onClick={submitMessage} disabled={loading} className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg disabled:opacity-50">{loading ? 'Sending...' : 'Send Murmur'}</button>
           {userId && (
             <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg mt-6 text-center">
@@ -149,7 +152,7 @@ export default function Home() {
           <div className="grid gap-4 mt-6">
             {messages.map((msg) => (
               <div key={msg.id} className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
-                <p className="text-sm text-gray-500 mb-2">Mood: {msg.mood} | Has Reply: {msg.hasReply ? 'Yes' : 'No'}</p>
+                <p className="text-sm text-gray-500 mb-2">Mood: {msg.mood} | Has Reply: {msg.hasReply ? 'Yes' : 'No'} | Hidden: {msg.hidden ? 'Yes' : 'No'}</p>
                 <p className="text-lg">{msg.text}</p>
               </div>
             ))}
@@ -170,8 +173,12 @@ export default function Home() {
               return (
                 <div key={msg.id} className={`p-4 ${cardColor} rounded-lg`}>
                   <p className="text-sm text-gray-500 mb-2">Mood: {msg.mood}</p>
-                  <p className="text-lg">{msg.text}</p>
-                  <button onClick={() => setSelectedMessage(msg)} className="mt-3 text-blue-600 underline">Send Kindness</button>
+                  {msg.hidden ? (
+                    <p className="text-sm italic text-gray-400">This murmur is private.</p>
+                  ) : (
+                    <p className="text-lg">{msg.text}</p>
+                  )}
+                  <button onClick={() => setSelectedMessage(msg)} className="mt-3 px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">Send Kindness</button>
                 </div>
               );
             })}
@@ -183,3 +190,4 @@ export default function Home() {
     </div>
   );
 }
+
