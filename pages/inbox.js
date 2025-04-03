@@ -73,8 +73,8 @@ export default function Inbox() {
     <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Inbox</h1>
-        <Link href="/murmur">
-          <span className="text-blue-600 underline">← Back</span>
+        <Link href="/">
+          <span className="text-blue-600 underline">&larr; Back</span>
         </Link>
       </div>
 
@@ -88,27 +88,17 @@ export default function Inbox() {
         {messages.map(({ message, reply, replyId }) => (
           <div key={replyId} className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
             <p className="text-sm text-gray-500 dark:text-gray-400">Your murmur:</p>
-            <p className="text-lg mb-3 italic">"{message.text}"</p>
+            <p className="text-lg mb-3 italic">&quot;{message.text}&quot;</p>
 
             <p className="text-sm text-gray-500 dark:text-gray-400">Their reply:</p>
-            <p className="text-base mb-2">{reply.replyText}</p>
-
-            {reply.songUrl && (
-              <a
-                href={reply.songUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block mt-2 px-4 py-1.5 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
-              >
-                🎵 Listen to Suggested Song
-              </a>
-            )}
+            <p className="text-base">{reply.replyText}</p>
           </div>
         ))}
       </div>
     </div>
   );
 }
+
 
 
 
