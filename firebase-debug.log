@@ -1,0 +1,31 @@
+[debug] [2025-04-03T04:17:59.516Z] ----------------------------------------------------------------------
+[debug] [2025-04-03T04:17:59.518Z] Command:       /Users/ishanpathak/.nvm/versions/node/v18.20.8/bin/node /Users/ishanpathak/.nvm/versions/node/v18.20.8/bin/firebase deploy --only functions --debug
+[debug] [2025-04-03T04:17:59.519Z] CLI Version:   13.35.1
+[debug] [2025-04-03T04:17:59.519Z] Platform:      darwin
+[debug] [2025-04-03T04:17:59.519Z] Node Version:  v18.20.8
+[debug] [2025-04-03T04:17:59.521Z] Time:          Thu Apr 03 2025 00:17:59 GMT-0400 (Eastern Daylight Time)
+[debug] [2025-04-03T04:17:59.521Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-04-03T04:17:59.778Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-04-03T04:17:59.780Z] > authorizing via signed-in user (ishan.pathak2711@gmail.com)
+[debug] [2025-04-03T04:17:59.780Z] [iam] checking project murmur-897f9 for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2025-04-03T04:17:59.782Z] Checked if tokens are valid: true, expires at: 1743657135609
+[debug] [2025-04-03T04:17:59.782Z] Checked if tokens are valid: true, expires at: 1743657135609
+[debug] [2025-04-03T04:17:59.783Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/murmur-897f9:testIamPermissions [none]
+[debug] [2025-04-03T04:17:59.784Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/murmur-897f9:testIamPermissions x-goog-quota-user=projects/murmur-897f9
+[debug] [2025-04-03T04:17:59.784Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/murmur-897f9:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2025-04-03T04:18:00.082Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/murmur-897f9:testIamPermissions 200
+[debug] [2025-04-03T04:18:00.083Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/murmur-897f9:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2025-04-03T04:18:00.083Z] Checked if tokens are valid: true, expires at: 1743657135609
+[debug] [2025-04-03T04:18:00.083Z] Checked if tokens are valid: true, expires at: 1743657135609
+[debug] [2025-04-03T04:18:00.084Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/murmur-897f9/serviceAccounts/murmur-897f9@appspot.gserviceaccount.com:testIamPermissions [none]
+[debug] [2025-04-03T04:18:00.084Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/murmur-897f9/serviceAccounts/murmur-897f9@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2025-04-03T04:18:00.372Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/murmur-897f9/serviceAccounts/murmur-897f9@appspot.gserviceaccount.com:testIamPermissions 200
+[debug] [2025-04-03T04:18:00.373Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/murmur-897f9/serviceAccounts/murmur-897f9@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[info] 
+[info] === Deploying to 'murmur-897f9'...
+[info] 
+[info] i  deploying functions 
+[info] Running command: npm --prefix "$RESOURCE_DIR" run lint
+[error] 
+[error] Error: functions predeploy error: Command terminated with non-zero exit code 2
